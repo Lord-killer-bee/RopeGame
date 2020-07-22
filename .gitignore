@@ -1,0 +1,9 @@
+########################################################
+# Ignoring all the unity generated files from the repo #
+########################################################
+Library
+Temp
+obj
+.vs
+*.csproj
+*.sln
