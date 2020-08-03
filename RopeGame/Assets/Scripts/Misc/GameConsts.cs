@@ -13,9 +13,17 @@
     #region Tags and layers
 
     public const string LATCHPOINT_TAG = "LatchPoint";
+    public const string WINDINGTARGET_TAG = "WindingTarget";
+    public const string LEVELEND_TAG = "LevelEnd";
 
     public const int PLATFORM_LAYER = 1<<8;
     public const int LATCHPOINTS_LAYER = 1<<9;
+
+    #endregion
+
+    #region Player prefs
+
+    public const string CURRENTLEVEL_KEY = "CurrentLevel";
 
     #endregion
 }

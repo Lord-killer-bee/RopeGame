@@ -1,20 +1,37 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Core;
+using System;
 
-namespace ArrowGame
+[RequireComponent(typeof(Player))]
+public class PlayerInput : MonoBehaviour
 {
-    [RequireComponent(typeof(Player))]
-    public class PlayerInput : MonoBehaviour
+    private bool levelInitiated = false;
+    Player player;
+
+    void Start()
     {
+        player = GetComponent<Player>();
+    }
 
-        Player player;
+    private void OnEnable()
+    {
+        GameEventManager.Instance.AddListener<InitiateLevelEvent>(OnLevelInitiated);
+    }
 
-        void Start()
-        {
-            player = GetComponent<Player>();
-        }
+    private void OnDisable()
+    {
+        GameEventManager.Instance.RemoveListener<InitiateLevelEvent>(OnLevelInitiated);
+    }
 
-        void Update()
+    private void OnLevelInitiated(InitiateLevelEvent e)
+    {
+        levelInitiated = true;
+    }
+
+    void Update()
+    {
+        if (levelInitiated)
         {
             Vector2 directionalInput = new Vector2(Input.GetAxisRaw(GameConsts.HORIZONTAL_CODE), Input.GetAxisRaw(GameConsts.VERTICAL_CODE));
             player.SetDirectionalInput(directionalInput);

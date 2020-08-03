@@ -19,5 +19,25 @@ public enum PlayerState
     LatchUnderProcess,
     Latched,
     ReleasedFromLatch,
+    CastingBand,
     MoveByBand,
+    StuckOnWall,
+    JumpFromWall
+}
+
+public enum PlayerJumpState
+{
+    None,
+    JumpUp,
+    ReachedPeak,
+    FallingDown,
+    HitGround
+}
+
+public enum BoulderType
+{
+    None,
+    Unmovable,
+    Movable,
+    Destructible,
 }
