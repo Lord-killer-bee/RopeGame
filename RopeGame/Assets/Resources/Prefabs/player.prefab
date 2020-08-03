@@ -144,7 +144,7 @@ GameObject:
   - component: {fileID: 531664852684693917}
   m_Layer: 0
   m_Name: player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -231,6 +231,7 @@ MonoBehaviour:
   latchDetectRadius: 4
   latchRotationSpeed: 6
   latchIndicatorParentPref: {fileID: 531664852076944987}
+  latchRotationDrag: 3
   bandRopePref: {fileID: 3350403520350250880, guid: adda5498b003d284d8fefcecd214defa,
     type: 3}
   bandTargetLength: 6
@@ -260,7 +261,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 531664852306803984}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: a437fc5192594ea4da1f2518e5210e59, type: 2}
   m_CullingMode: 0

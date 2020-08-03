@@ -92,7 +92,7 @@ public class TestPlayer : MonoBehaviour
         UpdateLatchPointsData();
         CalculateVelocityInState();
 
-        controller.Move(velocity * Time.deltaTime, directionalInput);
+        controller.Move(velocity * Time.deltaTime);
 
         RenderLatchIndicator();
 

@@ -27,7 +27,7 @@ public class Boulder : MonoBehaviour
     private void Update()
     {
         CalculateVelocity();
-        controller.Move(velocity * Time.deltaTime, Vector2.zero);
+        controller.Move(velocity * Time.deltaTime);
     }
 
     private void CalculateVelocity()

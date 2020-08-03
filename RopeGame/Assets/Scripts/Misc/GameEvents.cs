@@ -1,10 +1,5 @@
 ﻿using Core;
 
-public class PlayerRevolutionCompleteEvent : GameEvent
-{
-
-}
-
 public class PlayerStateChangedEvent : GameEvent
 {
     public PlayerState playerState;
@@ -15,23 +10,12 @@ public class PlayerStateChangedEvent : GameEvent
     }
 }
 
-public class EnemyReachedTargetEvent : GameEvent
-{
-
-}
-
-
 public class PlayerReachedEndEvent : GameEvent
 {
 
 }
 
 public class StartGameEvent : GameEvent
-{
-
-}
-
-public class InitiateLevelEvent : GameEvent
 {
 
 }

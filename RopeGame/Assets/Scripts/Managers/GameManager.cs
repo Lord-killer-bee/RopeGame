@@ -16,7 +16,6 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
 
-        GameEventManager.Instance.AddListener<EnemyReachedTargetEvent>(EnemyReachedTarget);
         GameEventManager.Instance.AddListener<PlayerReachedEndEvent>(OnPlayerCompletedLevel);
         GameEventManager.Instance.AddListener<StartGameEvent>(OnGameStarted);
     }
@@ -25,7 +24,6 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
 
-        GameEventManager.Instance.RemoveListener<EnemyReachedTargetEvent>(EnemyReachedTarget);
         GameEventManager.Instance.RemoveListener<PlayerReachedEndEvent>(OnPlayerCompletedLevel);
         GameEventManager.Instance.RemoveListener<StartGameEvent>(OnGameStarted);
     }
@@ -41,16 +39,7 @@ public class GameManager : MonoBehaviour
         {
             referenceHolder.spaceText.SetActive(false);
             levelInitiated = true;
-
-            GameEventManager.Instance.TriggerSyncEvent(new InitiateLevelEvent());
         }
-    }
-
-    private void EnemyReachedTarget(EnemyReachedTargetEvent e)
-    {
-        //Reload the level
-        referenceHolder.transitionAnim.Play("FadeOut");
-        Invoke("LoadSceneWithDelay", 0.8f);
     }
 
     private void OnPlayerCompletedLevel(PlayerReachedEndEvent e)

@@ -21,7 +21,7 @@ public class Controller2D : RaycastController
     /// <param name="moveAmount"></param>
     /// <param name="input"></param>
     /// <param name="standingOnPlatform"></param>
-    public void Move(Vector2 moveAmount, Vector2 input, bool standingOnPlatform = false)
+    public void Move(Vector2 moveAmount, bool standingOnPlatform = false)
     {
         UpdateRaycastOrigins();
 
@@ -32,8 +32,12 @@ public class Controller2D : RaycastController
             collisions.faceDir = (int)Mathf.Sign(moveAmount.x);
         }
 
-        HorizontalCollisions(ref moveAmount);
-        //if (moveAmount.y != 0) //Removed to allow collision calculation when banded on wall
+        //if (moveAmount.x != 0)
+        {
+            HorizontalCollisions(ref moveAmount);
+        }
+
+        //if (moveAmount.y != 0) //Remove to allow collision calculation when banded on wall
         {
             VerticalCollisions(ref moveAmount);
         }

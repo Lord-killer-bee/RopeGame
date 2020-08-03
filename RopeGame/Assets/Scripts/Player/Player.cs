@@ -78,8 +78,6 @@ public class Player : MonoBehaviour
 
     #endregion
 
-    private bool levelInitiated = false;
-
     #region Unity base methods
 
     void Awake()
@@ -94,48 +92,35 @@ public class Player : MonoBehaviour
         SetPlayerState(PlayerState.IdleMove);
     }
 
-    private void OnEnable()
-    {
-        GameEventManager.Instance.AddListener<InitiateLevelEvent>(OnLevelInitiated);
-    }
-
-    private void OnDisable()
-    {
-        GameEventManager.Instance.RemoveListener<InitiateLevelEvent>(OnLevelInitiated);
-    }
-
     void Update()
     {
-        if (levelInitiated)
+        UpdateLatchPointsData();
+        CalculateVelocityInState();
+
+        controller.Move(velocity * Time.deltaTime);
+
+        RenderLatchIndicator();
+        UpdateAnimationState();
+
+        //If collision with top or bottom then stop the player
+        if (controller.collisions.above || controller.collisions.below)
         {
-            UpdateLatchPointsData();
-            CalculateVelocityInState();
-
-            controller.Move(velocity * Time.deltaTime, directionalInput);
-
-            RenderLatchIndicator();
-            UpdateAnimationState();
-
-            //If collision with top or bottom then stop the player
-            if (controller.collisions.above || controller.collisions.below)
-            {
-                velocity.y = 0;
-            }
-
-            if (controller.collisions.below)
-            {
-                ChangePlayerLocation(PlayerLocation.Grounded);
-
-                //If jump is stored then simulate a jump even with out any further input
-                if (jumpStored)
-                {
-                    OnJumpInputDown();
-                    jumpStored = false;
-                }
-            }
-            else
-                ChangePlayerLocation(PlayerLocation.InAir);
+            velocity.y = 0;
         }
+
+        if (controller.collisions.below)
+        {
+            ChangePlayerLocation(PlayerLocation.Grounded);
+
+            //If jump is stored then simulate a jump even with out any further input
+            if (jumpStored)
+            {
+                OnJumpInputDown();
+                jumpStored = false;
+            }
+        }
+        else
+            ChangePlayerLocation(PlayerLocation.InAir);
     }
 
     private void OnTriggerEnter2D(Collider2D collider)
@@ -312,21 +297,6 @@ public class Player : MonoBehaviour
 
                 velocity.x = ((latchDetectRadius * Mathf.Cos(angle * Mathf.Deg2Rad)) + currentLatchingPoint.position.x - transform.position.x) / Time.deltaTime;
                 velocity.y = ((latchDetectRadius * Mathf.Sin(angle * Mathf.Deg2Rad)) + currentLatchingPoint.position.y - transform.position.y) / Time.deltaTime;
-
-                if (rotationDirection == 1)
-                {
-                    if (angle > initialRotation && angle - initialRotation < latchRotationSpeed)
-                    {
-                        GameEventManager.Instance.TriggerAsyncEvent(new PlayerRevolutionCompleteEvent());
-                    }
-                }
-                else
-                {
-                    if (angle < initialRotation && initialRotation - angle < latchRotationSpeed)
-                    {
-                        GameEventManager.Instance.TriggerAsyncEvent(new PlayerRevolutionCompleteEvent());
-                    }
-                }
                 break;
 
             case PlayerState.ReleasedFromLatch:
@@ -595,10 +565,6 @@ public class Player : MonoBehaviour
 
     #region Event listeners
 
-    private void OnLevelInitiated(InitiateLevelEvent e)
-    {
-        levelInitiated = true;
-    }
 
     #endregion
 }
