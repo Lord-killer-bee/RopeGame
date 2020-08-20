@@ -41,3 +41,25 @@ public enum BoulderType
     Movable,
     Destructible,
 }
+
+public enum EntityActionType
+{
+    None,
+    Play,
+    Pause,
+    Rewind,
+    FastForward,
+    Stop
+}
+
+public enum RecorderButtonType
+{
+    None,
+    Play,
+    Pause,
+    Stop,
+    Rewind,
+    FastForward,
+    Next,
+    Previous
+}

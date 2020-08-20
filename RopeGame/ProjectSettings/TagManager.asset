@@ -7,6 +7,9 @@ TagManager:
   - LatchPoint
   - WindingTarget
   - LevelEnd
+  - Spike
+  - Key
+  - RecorderButton
   layers:
   - Default
   - TransparentFX

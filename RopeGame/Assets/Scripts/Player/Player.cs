@@ -67,6 +67,12 @@ public class Player : MonoBehaviour
     #region Referenes
     public Controller2D controller { get; private set; }
     public Animator animator;
+    public AudioSource audioSource;
+
+    public AudioClip jumpEffect;
+    public AudioClip deathEffect;
+    public AudioClip collectEffect;
+    public AudioClip levelCompleteEffect;
     #endregion
 
     #region Animation variables
@@ -77,6 +83,9 @@ public class Player : MonoBehaviour
     private float initialRotation;
 
     #endregion
+
+    private bool levelInitiated;
+    private bool keyCollected = false;
 
     #region Unity base methods
 
@@ -92,42 +101,107 @@ public class Player : MonoBehaviour
         SetPlayerState(PlayerState.IdleMove);
     }
 
+    private void OnEnable()
+    {
+        GameEventManager.Instance.AddListener<LevelInitiatedEvent>(OnLevelInitiated);
+        GameEventManager.Instance.AddListener<KeyHitSpikeEvent>(OnKeyHitSpike);
+    }
+
+    private void OnDisable()
+    {
+        GameEventManager.Instance.RemoveListener<LevelInitiatedEvent>(OnLevelInitiated);
+        GameEventManager.Instance.RemoveListener<KeyHitSpikeEvent>(OnKeyHitSpike);
+    }
+    private void OnLevelInitiated(LevelInitiatedEvent e)
+    {
+        levelInitiated = true;
+        GetComponent<PlayerInput>().Initialize();
+    }
+
+    private void OnKeyHitSpike(KeyHitSpikeEvent e)
+    {
+        levelInitiated = false;
+        audioSource.PlayOneShot(deathEffect);
+    }
+
+
     void Update()
     {
-        UpdateLatchPointsData();
-        CalculateVelocityInState();
-
-        controller.Move(velocity * Time.deltaTime);
-
-        RenderLatchIndicator();
-        UpdateAnimationState();
-
-        //If collision with top or bottom then stop the player
-        if (controller.collisions.above || controller.collisions.below)
+        if (levelInitiated)
         {
-            velocity.y = 0;
-        }
+            UpdateLatchPointsData();
+            CalculateVelocityInState();
 
-        if (controller.collisions.below)
-        {
-            ChangePlayerLocation(PlayerLocation.Grounded);
+            controller.Move(velocity * Time.deltaTime);
 
-            //If jump is stored then simulate a jump even with out any further input
-            if (jumpStored)
+            RenderLatchIndicator();
+            UpdateAnimationState();
+
+            //If collision with top or bottom then stop the player
+            if (controller.collisions.above || controller.collisions.below)
             {
-                OnJumpInputDown();
-                jumpStored = false;
+                velocity.y = 0;
             }
+
+            if (controller.collisions.below)
+            {
+                ChangePlayerLocation(PlayerLocation.Grounded);
+
+                //If jump is stored then simulate a jump even with out any further input
+                if (jumpStored)
+                {
+                    OnJumpInputDown();
+                    jumpStored = false;
+                }
+            }
+            else
+                ChangePlayerLocation(PlayerLocation.InAir);
         }
-        else
-            ChangePlayerLocation(PlayerLocation.InAir);
     }
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
         if (collider.tag == GameConsts.LEVELEND_TAG)
         {
-            GameEventManager.Instance.TriggerSyncEvent(new PlayerReachedEndEvent());
+            if (collider.GetComponent<LevelEndObject>().IsLocked())
+            {
+                if (keyCollected)
+                {
+                    GameEventManager.Instance.TriggerSyncEvent(new PlayerReachedEndEvent());
+                    audioSource.PlayOneShot(levelCompleteEffect);
+                }
+            }
+            else
+            {
+                GameEventManager.Instance.TriggerSyncEvent(new PlayerReachedEndEvent());
+                audioSource.PlayOneShot(levelCompleteEffect);
+            }
+        }
+        else if (collider.tag == GameConsts.KEY_TAG)
+        {
+            keyCollected = true;
+            collider.gameObject.SetActive(false);
+
+            audioSource.PlayOneShot(collectEffect);
+        }
+        else if (collider.tag == GameConsts.RECORDERBUTTON_TAG)
+        {
+            audioSource.PlayOneShot(collectEffect);
+        }
+    }
+
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.tag == GameConsts.SPIKE_TAG)
+        {
+            GameEventManager.Instance.TriggerSyncEvent(new PlayerHitSpikeEvent());
+            GameEventManager.Instance.TriggerAsyncEvent(new ShakeCameraEvent());
+            levelInitiated = false;
+
+            animator.Play("Death");
+
+            audioSource.PlayOneShot(deathEffect);
         }
     }
 
@@ -167,22 +241,25 @@ public class Player : MonoBehaviour
                 break;
             case PlayerState.IdleMove:
                 animator.Play("Idle");
-                Camera.main.GetComponent<CameraFollow>().OnLatchEnded();
+                //Camera.main.GetComponent<CameraFollow>().OnLatchEnded();
                 break;
             case PlayerState.Jump:
                 SetPlayerJumpState(PlayerJumpState.JumpUp);
+
+                audioSource.PlayOneShot(jumpEffect);
+
                 break;
             case PlayerState.LatchUnderProcess:
                 currentLatchingPoint = GetClosestLatchPoint();
                 break;
             case PlayerState.Latched:
-                Camera.main.GetComponent<CameraFollow>().OnLatched(currentLatchingPoint);
+                //Camera.main.GetComponent<CameraFollow>().OnLatched(currentLatchingPoint);
 
                 rotationDirection = -(int)Mathf.Sign(Vector3.Cross(currentLatchingPoint.position - transform.position, velocity).z);
                 initialRotation = Vector2.SignedAngle(currentLatchingPoint.right, ((Vector2)currentLatchingPoint.position - (Vector2)transform.position).normalized);
                 break;
             case PlayerState.ReleasedFromLatch:
-                Camera.main.GetComponent<CameraFollow>().OnLatchEnded();
+                //Camera.main.GetComponent<CameraFollow>().OnLatchEnded();
                 break;
 
         }
@@ -200,13 +277,13 @@ public class Player : MonoBehaviour
         switch (jumpState)
         {
             case PlayerJumpState.JumpUp:
-                animator.Play("JumpUp");
+                //animator.Play("JumpUp");
                 break;
             case PlayerJumpState.ReachedPeak:
-                animator.SetTrigger("ReachedPeak");
+                //animator.SetTrigger("ReachedPeak");
                 break;
             case PlayerJumpState.FallingDown:
-                animator.SetTrigger("FallDown");
+                //animator.SetTrigger("FallDown");
                 break;
             case PlayerJumpState.HitGround:
                 break;
