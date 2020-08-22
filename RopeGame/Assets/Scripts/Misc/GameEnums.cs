@@ -1,7 +1,8 @@
 ﻿public enum ObjectType
 {
     None,
-    Player
+    Player,
+    AI
 }
 
 public enum PlayerLocation
@@ -20,4 +21,29 @@ public enum PlayerState
     Latched,
     ReleasedFromLatch,
     MoveByBand,
+}
+
+public enum AIState
+{
+    None,
+    SearchingForAction,
+    ExecutingAction,
+    CooldownToSearch
+}
+
+public enum AIActionType
+{
+    None,
+    Idle,
+    Move,
+    Jump,
+    Latch,
+}
+
+public enum GameState
+{
+    None,
+    CountDown,
+    Match,
+    EndSequence
 }

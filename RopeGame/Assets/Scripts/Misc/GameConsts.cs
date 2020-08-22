@@ -13,6 +13,8 @@
     #region Tags and layers
 
     public const string LATCHPOINT_TAG = "LatchPoint";
+    public const string PLATFORM_TAG = "Platform";
+    public const string ENDPOINT_TAG = "EndPoint";
 
     public const int PLATFORM_LAYER = 1<<8;
     public const int LATCHPOINTS_LAYER = 1<<9;
